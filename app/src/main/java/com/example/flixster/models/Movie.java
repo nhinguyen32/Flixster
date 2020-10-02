@@ -19,6 +19,8 @@ public class Movie {
     String releaseDate;
     boolean adult;
     int id;
+    int popularity;
+    int voteCount;
 
     public Movie() {}
 
@@ -31,6 +33,8 @@ public class Movie {
         releaseDate = jsonObject.getString("release_date");
         adult = jsonObject.getBoolean("adult");
         id = jsonObject.getInt("id");
+        popularity = jsonObject.getInt("popularity");
+        voteCount = jsonObject.getInt("vote_count");
     }
 
     public static List<Movie> fromJsonArray(JSONArray movieJsonArray) throws JSONException {
@@ -75,5 +79,13 @@ public class Movie {
 
     public int getId() {
         return id;
+    }
+
+    public int getPopularity() {
+        return popularity;
+    }
+
+    public int getVoteCount() {
+        return voteCount;
     }
 }

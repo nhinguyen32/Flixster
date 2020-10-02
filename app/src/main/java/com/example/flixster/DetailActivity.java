@@ -19,6 +19,7 @@ import com.google.android.youtube.player.YouTubePlayerView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.parceler.Parcels;
+import org.w3c.dom.Text;
 
 import okhttp3.Headers;
 
@@ -26,12 +27,15 @@ public class DetailActivity extends YouTubeBaseActivity {
 
     private static final String YOUTUBE_API_KEY = "AIzaSyCG4uy29jHnMiCCt8_F2HFmLqq0WFHdsmU";
     public static final String VIDEOS_URL = "https://api.themoviedb.org/3/movie/%d/videos?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
+    public static final String GENRES_URL = "https://api.themoviedb.org/3/genre/movie/list?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
     TextView tvTitle;
     TextView tvOverview;
     RatingBar ratingBar;
     TextView releaseDate;
     TextView adultWarning;
     YouTubePlayerView youTubePlayerView;
+    TextView popularity;
+    TextView voteCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,8 @@ public class DetailActivity extends YouTubeBaseActivity {
         releaseDate = findViewById(R.id.releaseDate);
         adultWarning = findViewById(R.id.adultWarning);
         youTubePlayerView = findViewById(R.id.player);
+        popularity = findViewById(R.id.popularity);
+        voteCount = findViewById(R.id.voteCount);
 
         Movie movie = Parcels.unwrap(getIntent().getParcelableExtra("movie"));
         tvTitle.setText(movie.getTitle());
@@ -52,6 +58,8 @@ public class DetailActivity extends YouTubeBaseActivity {
         releaseDate.setText("Release date: " + movie.getReleaseDate());
         if (movie.isAdult())
             adultWarning.setVisibility(View.VISIBLE);
+        popularity.setText("Popularity: " + movie.getPopularity());
+        voteCount.setText("Vote count: " + movie.getVoteCount());
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(String.format(VIDEOS_URL, movie.getId()), new JsonHttpResponseHandler() {
@@ -65,6 +73,22 @@ public class DetailActivity extends YouTubeBaseActivity {
                     String youtubeKey = results.getJSONObject(0).getString("key");
                     Log.d("DetailActivity", youtubeKey);
                     initializeYoutube(youtubeKey);
+                } catch (JSONException e) {
+                    Log.e("DetailActivity", "Failed to parse JSON", e);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
+            }
+        });
+
+        client.get(GENRES_URL, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                try {
+                    JSONArray genres = json.jsonObject.getJSONArray("genres");
                 } catch (JSONException e) {
                     Log.e("DetailActivity", "Failed to parse JSON", e);
                 }
